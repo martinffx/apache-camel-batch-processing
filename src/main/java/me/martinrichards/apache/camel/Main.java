@@ -36,6 +36,10 @@ public class Main {
                 }
             }
         });
+        
+        while (app.isRunning()) {
+            Thread.sleep(100);
+        }
     }
 
     public void start() throws Exception {
@@ -44,5 +48,9 @@ public class Main {
 
     public void stop() throws Exception {
         context.stop();
+    }
+
+    public boolean isRunning() {
+        return true;
     }
 }

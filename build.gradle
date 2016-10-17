@@ -1,4 +1,4 @@
-apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'idea'
 
 repositories {
@@ -16,11 +16,8 @@ dependencies {
     compile 'org.apache.camel:camel-test:2.18.0'
 }
 
-task stage {
-    dependsOn build
+mainClassName = "me.martinrichards.apache.camel.Main"
 
-    copy {
-        into "$buildDir/lib"
-        from(configurations.runtime)
-    }
+task stage {
+  dependsOn installDist
 }

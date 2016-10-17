@@ -1,0 +1,26 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.18'
+    compile 'ch.qos.logback:logback-classic:1.1.7'
+    compile 'org.apache.camel:camel:2.18.0'
+    compile 'org.apache.camel:camel-csv:2.18.0'
+    compile 'org.apache.camel:camel-guice:2.18.0'
+
+    testCompile 'junit:junit:4.12'
+    compile 'org.apache.camel:camel-test:2.18.0'
+}
+
+task stage {
+    dependsOn build
+
+    copy {
+        into "$buildDir/lib"
+        from(configurations.runtime)
+    }
+}

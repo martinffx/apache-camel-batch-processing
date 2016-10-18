@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.Route;
 import org.apache.camel.guice.CamelModuleWithRouteTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,18 +13,18 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by martinrichards on 2016/10/16.
  */
-public class Main {
-    private static Logger log = LoggerFactory.getLogger(Main.class);
-    private final CamelContext context;
+public class FooApplication {
+    private static final Logger log = LoggerFactory.getLogger(FooApplication.class);
+    private final CamelContext camel;
 
     @Inject
-    public Main(CamelContext camelContext){
-        context = camelContext;
+    public FooApplication(CamelContext camelContext){
+        camel = camelContext;
     }
 
     public static void main(String... args) throws Exception {
-        Injector injector = Guice.createInjector(new CamelModuleWithRouteTypes());
-        final Main app = injector.getInstance(Main.class);
+        Injector injector = Guice.createInjector(new CamelModuleWithRouteTypes(BarRoute.class));
+        final FooApplication app = injector.getInstance(FooApplication.class);
         app.start();
         log.info("Application has started!");
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -43,14 +44,15 @@ public class Main {
     }
 
     public void start() throws Exception {
-        context.start();
+        camel.start();
     }
 
     public void stop() throws Exception {
-        context.stop();
+        camel.stop();
     }
 
     public boolean isRunning() {
+        Route routeName = camel.getRoute(BarRoute.ROUTE_NAME);
         return true;
     }
 }

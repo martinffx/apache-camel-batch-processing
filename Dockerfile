@@ -1,7 +1,6 @@
 FROM openjdk:8-alpine
 
 WORKDIR /usr/src
-COPY ./ /usr/src
-RUN ./gradlew stage
+COPY ./build/install/apache-camel-batch-processing /usr/src
 
-CMD ["./build/install/apache-camel-batch-processing/bin/apache-camel-batch-processing"]
+CMD ["./bin/apache-camel-batch-processing"]

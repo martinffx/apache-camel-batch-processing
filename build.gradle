@@ -8,15 +8,17 @@ repositories {
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.18'
     compile 'ch.qos.logback:logback-classic:1.1.7'
+    compile 'org.apache.httpcomponents:httpclient:4.5.2'
+
     compile 'org.apache.camel:camel:2.18.0'
     compile 'org.apache.camel:camel-csv:2.18.0'
     compile 'org.apache.camel:camel-guice:2.18.0'
 
     testCompile 'junit:junit:4.12'
-    compile 'org.apache.camel:camel-test:2.18.0'
+    testCompile 'org.apache.camel:camel-test:2.18.0'
 }
 
-mainClassName = "me.martinrichards.apache.camel.Main"
+mainClassName = 'me.martinrichards.apache.camel.addresss.Application'
 
 task stage {
   dependsOn installDist

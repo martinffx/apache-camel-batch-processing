@@ -1,5 +1,7 @@
 package me.martinrichards.apache.camel.address;
 
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +17,7 @@ public class Parallel {
 
     private static final ExecutorService forPool =
             Executors.newFixedThreadPool(NUM_CORES * 2,
-                    new NamedThreadFactory("Parallel.For"));
+                    new BasicThreadFactory.Builder().build());
 
     public static <T> void For(final Iterable<T> elements, final Operation<T> operation) {
         try {
@@ -26,7 +28,7 @@ public class Parallel {
         }
     }
 
-    public static <T> Collection<Callable<Void>> createCallables(final Iterable<T> elements,
+    private static <T> Collection<Callable<Void>> createCallables(final Iterable<T> elements,
                                                                  final Operation<T> operation) {
         List<Callable<Void>> callables = new LinkedList<>();
         for (final T elem : elements) {

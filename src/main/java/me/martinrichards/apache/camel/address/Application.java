@@ -5,10 +5,8 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.Route;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.guice.CamelModuleWithRouteTypes;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +14,7 @@ import me.martinrichards.apache.camel.address.routes.AddressRoute;
 import me.martinrichards.apache.camel.address.services.IAddressService;
 
 /**
- * Created by martinrichards on 2016/10/16.
+ * @author martinrichards
  */
 public class Application {
     private static final Logger log = LoggerFactory.getLogger(Application.class);
@@ -32,10 +30,8 @@ public class Application {
         Injector injector = Guice.createInjector(new CamelModuleWithRouteTypes(AddressRoute.class),
                 new Module());
 
-
-
         final Application app = injector.getInstance(Application.class);
-        app.start();
+        app.start(args);
         log.info("Application has started!");
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -47,14 +43,17 @@ public class Application {
                 }
             }
         });
-        
+
         while (app.isRunning()) {
             Thread.sleep(100);
         }
     }
 
-    public void start() throws Exception {
+    public void start(String... args) throws Exception {
         camel.start();
+        for (String arg : args) {
+            camel.getManagedCamelContext().sendBody(AddressRoute.FROM, arg);
+        }
     }
 
     public void stop() throws Exception {

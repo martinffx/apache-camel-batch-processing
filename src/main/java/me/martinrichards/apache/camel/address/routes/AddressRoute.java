@@ -9,7 +9,7 @@ import me.martinrichards.apache.camel.address.processor.taxi.data.TaxiDataProces
 import me.martinrichards.apache.camel.address.services.IAddressService;
 
 /**
- * Created by martinrichards on 2016/10/18.
+ * @author martinrichards
  */
 public class AddressRoute extends org.apache.camel.builder.RouteBuilder {
     public static final String ROUTE_NAME = "Default";
@@ -20,7 +20,8 @@ public class AddressRoute extends org.apache.camel.builder.RouteBuilder {
     private final TaxiDataProcessor taxiDataProcessor;
 
     @Inject
-    public AddressRoute(IAddressService addressService, TaxiDataProcessor taxiDataProcessor) {
+    public AddressRoute(final IAddressService addressService,
+                        final TaxiDataProcessor taxiDataProcessor) {
         this.addressService = addressService;
         this.taxiDataProcessor = taxiDataProcessor;
     }

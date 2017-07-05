@@ -9,21 +9,26 @@ import org.junit.Test;
 
 import me.martinrichards.apache.camel.address.routes.AddressRoute;
 
-import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
 /**
- * Created by martinrichards on 2016/10/16.
+ * @author martinrichards
  */
 public class ApplicationIntegrationTest {
     @Test
     @Ignore
     public void testApplicationStartupUrl() throws Exception {
+       Application.main("https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2016-01.csv");
+    }
+
+    @Test
+    public void testApplicationStartStop() throws Exception {
         Injector injector = Guice.createInjector(new CamelModuleWithRouteTypes(AddressRoute.class),
                 new Module());
 
         final Application app = injector.getInstance(Application.class);
-        app.start("https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2016-01.csv");
+        app.start();
+        app.process("https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2016-01.csv");
         assertTrue(app.getStatus().isStarted());
         assertTrue(app.isRunning());
 

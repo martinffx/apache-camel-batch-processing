@@ -5,10 +5,14 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.Route;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.guice.CamelModuleWithRouteTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 import me.martinrichards.apache.camel.address.routes.AddressRoute;
 import me.martinrichards.apache.camel.address.services.IAddressService;
@@ -21,17 +25,19 @@ public class Application {
     private final CamelContext camel;
 
     @Inject
-    public Application(CamelContext camelContext, IAddressService addressService) throws Exception {
+    public Application(final CamelContext camelContext, final IAddressService addressService)
+            throws Exception {
         camel = camelContext;
         camel.addService(addressService);
     }
 
-    public static void main(String... args) throws Exception {
-        Injector injector = Guice.createInjector(new CamelModuleWithRouteTypes(AddressRoute.class),
+    public static void main(final String... args) throws Exception {
+        final Injector injector = Guice.createInjector(new CamelModuleWithRouteTypes(AddressRoute.class),
                 new Module());
 
         final Application app = injector.getInstance(Application.class);
-        app.start(args);
+        app.start();
+        app.process(args);
         log.info("Application has started!");
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -49,10 +55,14 @@ public class Application {
         }
     }
 
-    public void start(String... args) throws Exception {
+    public void start() throws Exception {
         camel.start();
+    }
+
+    public void process(final String... args) {
+        final ProducerTemplate template = camel.createProducerTemplate();
         for (String arg : args) {
-            camel.getManagedCamelContext().sendBody(AddressRoute.FROM, arg);
+            template.asyncSendBody(AddressRoute.FROM, arg);
         }
     }
 
@@ -61,9 +71,15 @@ public class Application {
     }
 
     public boolean isRunning() {
-        ServiceStatus status = camel.getRouteStatus(AddressRoute.ROUTE_NAME);
-        return status.isStarted();
+        for(final Route route : camel.getRoutes()){
+            final ServiceStatus status = camel.getRouteStatus(route.getId());
+            if(!status.isStarted()) {
+                return false;
+            }
+        }
+        return true;
     }
+
     public ServiceStatus getStatus() {
         return camel.getStatus();
     }

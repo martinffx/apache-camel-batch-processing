@@ -12,9 +12,11 @@ import me.martinrichards.apache.camel.address.services.IAddressService;
  * @author martinrichards
  */
 public class AddressRoute extends org.apache.camel.builder.RouteBuilder {
-    public static final String ROUTE_NAME = "Default";
-    public static final String FROM = "direct:input";
-    public static final String TO = "direct:out";
+    private static final String ROUTE_NAME = "Default";
+    private static final String TO = "direct:out";
+
+    public static final String FROM_CSV = "direct:input";
+    public static final String FROM_TRIP_RECORD = "seda:trip-record";
 
     private final IAddressService addressService;
     private final TaxiDataProcessor taxiDataProcessor;
@@ -28,8 +30,8 @@ public class AddressRoute extends org.apache.camel.builder.RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from(FROM).routeId(ROUTE_NAME).process(taxiDataProcessor).unmarshal(new CsvDataFormat())
-                .split(body()).streaming().parallelProcessing()
+        from(FROM_CSV).routeId(ROUTE_NAME).process(taxiDataProcessor).to(TO);
+        from(FROM_TRIP_RECORD).threads(1,10)
                 .bean(addressService, "filterZone")
                 .filter(header(addressService.getIsValidHeader()).isEqualTo(true))
                 .throttle(addressService.getTPS()).bean(addressService, "getAddress")

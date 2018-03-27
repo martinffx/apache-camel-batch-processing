@@ -9,9 +9,12 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.Route;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.guice.CamelModuleWithRouteTypes;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import me.martinrichards.apache.camel.address.routes.AddressRoute;
@@ -32,7 +35,8 @@ public class Application {
     }
 
     public static void main(final String... args) throws Exception {
-        final Injector injector = Guice.createInjector(new CamelModuleWithRouteTypes(AddressRoute.class),
+        final Injector injector = Guice.createInjector(
+                new CamelModuleWithRouteTypes(AddressRoute.class),
                 new Module());
 
         final Application app = injector.getInstance(Application.class);
@@ -60,9 +64,13 @@ public class Application {
     }
 
     public void process(final String... args) {
+        if (args == null || args.length == 0) {
+            throw new IllegalArgumentException("args");
+        }
+
         final ProducerTemplate template = camel.createProducerTemplate();
         for (String arg : args) {
-            template.asyncSendBody(AddressRoute.FROM, arg);
+            template.asyncSendBody(AddressRoute.FROM_CSV, arg);
         }
     }
 

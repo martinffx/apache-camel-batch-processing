@@ -14,7 +14,7 @@ public class BundlingStrategy extends AbstractListAggregationStrategy<Map<String
     private static final Logger log = LoggerFactory.getLogger(BundlingStrategy.class);
 
     @Override
-    public Map<String, String> getValue(Exchange exchange) {
+    public Map<String, String> getValue(final Exchange exchange) {
         return (Map<String, String>) exchange.getIn().getBody();
     }
 }
